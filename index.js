@@ -76,7 +76,7 @@ app.post('/api/users/:_id/exercises', async (req,res) => {
   const { description, duration, date } = req.body
   let dateToSave;
   if( date === '' ){
-    dateToSave = new Date().toString()
+    dateToSave = new Date().toUTCString()
   }else {
     dateToSave = new Date(date).toUTCString()
   }
