@@ -64,7 +64,7 @@ app.get('/api/users/:_id/logs', async (req,res) => {
         _id: user._id,
         username: user.username,
         count: user.exercises.length,
-        logs: user.exercises
+        log: user.exercises
       })
     }catch(err){
       console.log(err)
@@ -94,7 +94,6 @@ app.post('/api/users/:_id/exercises', async (req,res) => {
       },
       {new: true, select: '-__v' }
       )
-      console.log(update)
       res.json({
         _id: update._id,
         username: update.username,
@@ -106,31 +105,6 @@ app.post('/api/users/:_id/exercises', async (req,res) => {
     console.log(err)
   }
 });
-
-// {
-//   username: "fcc_test",
-//   description: "test",
-//   duration: 60,
-//   date: "Mon Jan 01 1990",
-//   _id: "5fb5853f734231456ccb3b05"
-// }
-
-// {
-//   username: "fcc_test",
-//   _id: "5fb5853f734231456ccb3b05"
-// }
-
-// {
-//   username: "fcc_test",
-//   count: 1,
-//   _id: "5fb5853f734231456ccb3b05",
-//   log: [{
-//     description: "test",
-//     duration: 60,
-//     date: "Mon Jan 01 1990",
-//   }]
-// }
-
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {
