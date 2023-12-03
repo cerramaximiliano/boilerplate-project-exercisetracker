@@ -51,11 +51,33 @@ app.get('/api/users', async (req,res) => {
   }
 });
 
+app.get('/api/users/:_id/logs', async (req,res) => {
+  const { _id } = req.params;
+    try{
+      const user = await User.findById({_id})
+      console.log(user)
+      res.json({
+        _id: user._id,
+        username: user.username,
+        count: 1,
+        log: [
+          {
+            description: user.description,
+            duration: user.duration,
+            date: user.date
+          }
+        ]
+      })
+    }catch(err){
+      console.log(err)
+    }
+});
+
 app.post('/api/users/:_id/exercises', async (req,res) => {
   const { _id } = req.params;
   const { description, duration, date } = req.body
   let dateToSave;
-  if( new Date(date) === 'Invalid Date' ){
+  if( date === '' ){
     dateToSave = new Date().toString()
   }else {
     dateToSave = new Date(date).toString()
@@ -66,7 +88,7 @@ app.post('/api/users/:_id/exercises', async (req,res) => {
       duration: duration,
       date: dateToSave
       },
-      {new: true}
+      {new: true, select: '-__v' }
       )
       res.json(update)
   }catch(err){
