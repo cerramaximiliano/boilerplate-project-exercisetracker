@@ -12,7 +12,7 @@ const userSchema = new Schema({
   username: { type: String, required: true },
   description: String,
   duration: Number,
-  date: Date
+  date: String
 });
 
 const User = mongoose.model("User", userSchema);
@@ -31,9 +31,7 @@ app.post('/api/users', async (req, res) => {
     const user = new User ( {username} );
     try {
       const newUser = await user.save();
-      res.json({
-        newUser
-      })
+      res.json(newUser)
     }catch(err){
       console.log(err)
     }
@@ -48,7 +46,30 @@ app.get('/api/users', async (req,res) => {
   }catch(err){
     console.log(err)
   }
-})
+});
+
+app.post('/api/users/:_id/exercises', async (req,res) => {
+  const { _id } = req.params;
+  const { description, duration, date } = req.body
+  let dateToSave;
+  if( new Date(date) === 'Invalid Date' ){
+    dateToSave = new Date().toString()
+  }else {
+    dateToSave = new Date(date).toString()
+  }
+  try {
+    const update = await User.findByIdAndUpdate({_id}, {
+      description: description,
+      duration: duration,
+      date: dateToSave
+      },
+      {new: true}
+      )
+      res.json(update)
+  }catch(err){
+    console.log(err)
+  }
+});
 
 // {
 //   username: "fcc_test",
