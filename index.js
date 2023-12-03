@@ -56,45 +56,55 @@ app.get('/api/users', async (req,res) => {
   }
 });
 
-app.get('/api/users/:_id/logs', async (req,res) => {
+app.get('/api/users/:_id/logs', async (req, res) => {
   const { _id } = req.params;
-  const {from, to, limit} = req.query;
+  const { from, to, limit } = req.query;
+  console.log(from, to)
+  try {
+    const user = await User.findById(_id);
 
-    try{
-      const user = await User.findById(_id)
-
-      let exercises = user.exercises;
-      if (from || to) {
-        exercises = exercises.filter((exercise) => {
-          const exerciseDate = new Date(exercise.date);
-          return (!from || exerciseDate >= new Date(from)) && (!to || exerciseDate <= new Date(to));
-        });
-      }
-      if (limit) {
-        exercises = exercises.slice(0, parseInt(limit));
-      }
-
-      exercises = exercises.map((exercise) => {
-        const { description, duration, date } = exercise;
-        return {
-          description,
-          duration,
-          date: date ? new Date(date).toDateString() : null,
-        };
+    let exercises = user.exercises;
+    if (from && to) {
+      console.log(true)
+      exercises = exercises.filter((exercise) => {
+        const exerciseDate = new Date(exercise.date);
+        const fromDate = new Date(from);
+        const toDate = new Date(to);
+        return exerciseDate >= fromDate && exerciseDate <= toDate;
       });
-
-      console.log(exercises)
-
-      res.json({
-        _id: user._id,
-        username: user.username,
-        count: exercises.length,
-        log: exercises
-      })
-    }catch(err){
-      console.log(err)
+    } else if (from) {
+      exercises = exercises.filter((exercise) => new Date(exercise.date) >= new Date(from));
+    } else if (to) {
+      exercises = exercises.filter((exercise) => new Date(exercise.date) <= new Date(to));
     }
+
+    if (limit) {
+      exercises = exercises.slice(0, parseInt(limit));
+    }
+
+    exercises = exercises.map((exercise) => {
+      const { description, duration, date } = exercise;
+      return {
+        description,
+        duration,
+        date: date ? new Date(date).toDateString() : null,
+      };
+    });
+
+    console.log(exercises);
+
+    res.json({
+      _id: user._id,
+      username: user.username,
+      count: exercises.length,
+      log: exercises,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
 
 app.post('/api/users/:_id/exercises', async (req,res) => {
   const { _id } = req.params;
