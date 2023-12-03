@@ -73,12 +73,14 @@ app.get('/api/users/:_id/logs', async (req,res) => {
 
 app.post('/api/users/:_id/exercises', async (req,res) => {
   const { _id } = req.params;
-  const { description, duration, date } = req.body
+  const { description, duration, date } = req.body;
+  const options = { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' };
   let dateToSave;
   if( date === '' ){
-    dateToSave = new Date().toUTCString()
+    dateToSave = new Date().toLocaleDateString('en-US', options);
+
   }else {
-    dateToSave = new Date(date).toUTCString()
+    dateToSave = new Date(date).toLocaleDateString('en-US', options);
   }
   try {
     const update = await User.findByIdAndUpdate({_id}, {
@@ -86,17 +88,17 @@ app.post('/api/users/:_id/exercises', async (req,res) => {
         exercises: {
           description: description,
           duration: duration,
-          date: dateToSave,
+          date: dateToSave.replace(/,/g, ''),
         },
       },
       },
       {new: true, select: '-__v' }
       )
-
+      console.log(update)
       res.json({
         _id: update._id,
         username: update.username,
-        date: dateToSave,
+        date: dateToSave.replace(/,/g, ''),
         description: description,
         duration: Number(duration)
       })
