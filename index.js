@@ -10,9 +10,14 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 const userSchema = new Schema({
   username: { type: String, required: true },
-  description: String,
-  duration: Number,
-  date: String
+  exercises: [
+    {
+      description: String,
+      duration: Number,
+      date: String,
+    },
+  ],
+
 });
 
 const User = mongoose.model("User", userSchema);
@@ -55,18 +60,11 @@ app.get('/api/users/:_id/logs', async (req,res) => {
   const { _id } = req.params;
     try{
       const user = await User.findById({_id})
-      console.log(user)
       res.json({
         _id: user._id,
         username: user.username,
-        count: 1,
-        log: [
-          {
-            description: user.description,
-            duration: user.duration,
-            date: user.date
-          }
-        ]
+        count: user.exercises.length,
+        logs: user.exercises
       })
     }catch(err){
       console.log(err)
@@ -80,17 +78,28 @@ app.post('/api/users/:_id/exercises', async (req,res) => {
   if( date === '' ){
     dateToSave = new Date().toString()
   }else {
-    dateToSave = new Date(date).toString()
+    dateToSave = new Date(date).toUTCString()
   }
   try {
     const update = await User.findByIdAndUpdate({_id}, {
-      description: description,
-      duration: duration,
-      date: dateToSave
+      $push: {
+        exercises: {
+          description: description,
+          duration: duration,
+          date: dateToSave,
+        },
+      },
       },
       {new: true, select: '-__v' }
       )
-      res.json(update)
+
+      res.json({
+        _id: update._id,
+        username: update.username,
+        date: dateToSave,
+        description: description,
+        duration: Number(duration)
+      })
   }catch(err){
     console.log(err)
   }
