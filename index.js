@@ -107,7 +107,7 @@ app.post('/api/users/:_id/exercises', async (req,res) => {
   const { description, duration, date } = req.body;
   console.log(description, duration, date)
   let dateToSave;
-  if( date === '' ){
+  if( date === '' || date === undefined ){
     dateToSave = new Date()
 
   }else {
