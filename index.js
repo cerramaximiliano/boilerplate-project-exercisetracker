@@ -88,7 +88,7 @@ app.get('/api/users/:_id/logs', async (req, res) => {
         date: date ? new Date(date).toDateString() : null,
       };
     });
-
+    console.log(exercises)
     return res.json({
       _id: user._id,
       username: user.username,
