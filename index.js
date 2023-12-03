@@ -59,13 +59,12 @@ app.get('/api/users', async (req,res) => {
 app.get('/api/users/:_id/logs', async (req, res) => {
   const { _id } = req.params;
   const { from, to, limit } = req.query;
-  console.log(from, to)
+
   try {
     const user = await User.findById(_id);
 
     let exercises = user.exercises;
     if (from && to) {
-      console.log(true)
       exercises = exercises.filter((exercise) => {
         const exerciseDate = new Date(exercise.date);
         const fromDate = new Date(from);
@@ -91,9 +90,7 @@ app.get('/api/users/:_id/logs', async (req, res) => {
       };
     });
 
-    console.log(exercises);
-
-    res.json({
+    return res.json({
       _id: user._id,
       username: user.username,
       count: exercises.length,
