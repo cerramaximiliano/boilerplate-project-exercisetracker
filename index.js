@@ -105,6 +105,7 @@ app.get('/api/users/:_id/logs', async (req, res) => {
 app.post('/api/users/:_id/exercises', async (req,res) => {
   const { _id } = req.params;
   const { description, duration, date } = req.body;
+  console.log(description, duration, date)
   let dateToSave;
   if( date === '' ){
     dateToSave = new Date()
