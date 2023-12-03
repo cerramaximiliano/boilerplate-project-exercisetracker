@@ -14,7 +14,7 @@ const userSchema = new Schema({
     {
       description: String,
       duration: Number,
-      date: String,
+      date: Date,
     },
   ],
 
@@ -59,13 +59,14 @@ app.get('/api/users', async (req,res) => {
 app.get('/api/users/:_id/logs', async (req,res) => {
   const { _id } = req.params;
   const {from, to, limit} = req.query;
-
+  console.log(limit)
     try{
       const user = await User.findById({_id})
       .populate({
         path: "exercises",
-        options: { limit: limit }
+        options: { limit: 1 }
       })
+      console.log(user)
       res.json({
         _id: user._id,
         username: user.username,
@@ -82,10 +83,10 @@ app.post('/api/users/:_id/exercises', async (req,res) => {
   const { description, duration, date } = req.body;
   let dateToSave;
   if( date === '' ){
-    dateToSave = new Date().toDateString()
+    dateToSave = new Date()
 
   }else {
-    dateToSave = new Date(date).toDateString()
+    dateToSave = new Date(date)
   }
   try {
     const update = await User.findByIdAndUpdate({_id}, {
@@ -102,7 +103,7 @@ app.post('/api/users/:_id/exercises', async (req,res) => {
       res.json({
         _id: update._id,
         username: update.username,
-        date: dateToSave,
+        date: dateToSave.toDateString(),
         description: description,
         duration: Number(duration)
       })
