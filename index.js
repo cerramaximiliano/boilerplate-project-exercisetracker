@@ -58,8 +58,14 @@ app.get('/api/users', async (req,res) => {
 
 app.get('/api/users/:_id/logs', async (req,res) => {
   const { _id } = req.params;
+  const {from, to, limit} = req.query;
+
     try{
       const user = await User.findById({_id})
+      .populate({
+        path: "exercises",
+        options: { limit: limit }
+      })
       res.json({
         _id: user._id,
         username: user.username,
