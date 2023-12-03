@@ -62,24 +62,22 @@ app.get('/api/users/:_id/logs', async (req, res) => {
 
   try {
     const user = await User.findById(_id);
-
     let exercises = user.exercises;
-    if (from && to) {
-      exercises = exercises.filter((exercise) => {
-        const exerciseDate = new Date(exercise.date);
-        const fromDate = new Date(from);
-        const toDate = new Date(to);
-        return exerciseDate >= fromDate && exerciseDate <= toDate;
-      });
-    } else if (from) {
-      exercises = exercises.filter((exercise) => new Date(exercise.date) >= new Date(from));
-    } else if (to) {
-      exercises = exercises.filter((exercise) => new Date(exercise.date) <= new Date(to));
-    }
-
-    if (limit) {
-      exercises = exercises.slice(0, parseInt(limit));
-    }
+    // if (from && to) {
+    //   exercises = exercises.filter((exercise) => {
+    //     const exerciseDate = new Date(exercise.date);
+    //     const fromDate = new Date(from);
+    //     const toDate = new Date(to);
+    //     return exerciseDate >= fromDate && exerciseDate <= toDate;
+    //   });
+    // } else if (from) {
+    //   exercises = exercises.filter((exercise) => new Date(exercise.date) >= new Date(from));
+    // } else if (to) {
+    //   exercises = exercises.filter((exercise) => new Date(exercise.date) <= new Date(to));
+    // }
+    // if (limit) {
+    //   exercises = exercises.slice(0, parseInt(limit));
+    // }
 
     exercises = exercises.map((exercise) => {
       const { description, duration, date } = exercise;
