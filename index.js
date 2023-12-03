@@ -56,50 +56,25 @@ app.get('/api/users', async (req,res) => {
   }
 });
 
-app.get('/api/users/:_id/logs', async (req, res) => {
+app.get('/api/users/:_id/logs', async (req,res) => {
   const { _id } = req.params;
-  const { from, to, limit } = req.query;
+  const {from, to, limit} = req.query;
 
-  try {
-    const user = await User.findById(_id);
-    let exercises = user.exercises;
-    // if (from && to) {
-    //   exercises = exercises.filter((exercise) => {
-    //     const exerciseDate = new Date(exercise.date);
-    //     const fromDate = new Date(from);
-    //     const toDate = new Date(to);
-    //     return exerciseDate >= fromDate && exerciseDate <= toDate;
-    //   });
-    // } else if (from) {
-    //   exercises = exercises.filter((exercise) => new Date(exercise.date) >= new Date(from));
-    // } else if (to) {
-    //   exercises = exercises.filter((exercise) => new Date(exercise.date) <= new Date(to));
-    // }
-    // if (limit) {
-    //   exercises = exercises.slice(0, parseInt(limit));
-    // }
+    try{
+      const user = await User.findById(_id)
 
-    exercises = exercises.map((exercise) => {
-      const { description, duration, date } = exercise;
-      return {
-        description,
-        duration,
-        date: date ? new Date(date).toDateString() : null,
-      };
-    });
 
-    return res.json({
-      _id: user._id,
-      username: user.username,
-      count: exercises.length,
-      log: exercises,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+      console.log(user)
+      res.json({
+        _id: user._id,
+        username: user.username,
+        count: user.exercises.length,
+        log: user.exercises
+      })
+    }catch(err){
+      console.log(err)
+    }
 });
-
 
 app.post('/api/users/:_id/exercises', async (req,res) => {
   const { _id } = req.params;
