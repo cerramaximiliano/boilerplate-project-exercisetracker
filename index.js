@@ -59,19 +59,37 @@ app.get('/api/users', async (req,res) => {
 app.get('/api/users/:_id/logs', async (req,res) => {
   const { _id } = req.params;
   const {from, to, limit} = req.query;
-  console.log(limit)
+
     try{
-      const user = await User.findById({_id})
-      .populate({
-        path: "exercises",
-        options: { limit: 1 }
-      })
-      console.log(user)
+      const user = await User.findById(_id)
+
+      let exercises = user.exercises;
+      if (from || to) {
+        exercises = exercises.filter((exercise) => {
+          const exerciseDate = new Date(exercise.date);
+          return (!from || exerciseDate >= new Date(from)) && (!to || exerciseDate <= new Date(to));
+        });
+      }
+      if (limit) {
+        exercises = exercises.slice(0, parseInt(limit));
+      }
+
+      exercises = exercises.map((exercise) => {
+        const { description, duration, date } = exercise;
+        return {
+          description,
+          duration,
+          date: date ? new Date(date).toDateString() : null,
+        };
+      });
+
+      console.log(exercises)
+
       res.json({
         _id: user._id,
         username: user.username,
-        count: user.exercises.length,
-        log: user.exercises
+        count: exercises.length,
+        log: exercises
       })
     }catch(err){
       console.log(err)
